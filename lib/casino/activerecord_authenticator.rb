@@ -44,7 +44,7 @@ class CASino::ActiveRecordAuthenticator
     p  authenticator_name == "auth_user_by_otp"
     p user
     password_from_database = user.send(@options[:password_column]) if authenticator_name != "auth_user_by_otp"
-    password_from_database = user.value if authenticator_name == "auth_user_by_otp"
+    password_from_database = user.otp.value if authenticator_name == "auth_user_by_otp"
     p "after pfd"
     p password_from_database
     if authenticator_name == "auth_user_by_otp"
