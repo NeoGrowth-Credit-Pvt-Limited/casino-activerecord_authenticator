@@ -37,11 +37,15 @@ class CASino::ActiveRecordAuthenticator
     @model.establish_connection @options[:connection]
   end
 
-  def validate(username, password)
+  def validate(username, password ,authenticator_name)
     user = @model.send("find_by_#{@options[:username_column]}!", username)
     password_from_database = user.send(@options[:password_column])
 
-    if valid_password?(password, password_from_database)
+    if authenticator_name == "auth_user_by_otp"
+      p "in OTP auth"
+      p user
+      p password_from_database
+    elsif valid_password?(password, password_from_database)
       user_data(user)
     else
       false
