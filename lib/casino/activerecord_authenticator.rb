@@ -43,8 +43,9 @@ class CASino::ActiveRecordAuthenticator
     p password
     p authenticator_name
     user = @model.send("find_by_#{@options[:username_column]}!", username)
+    p user
     password_from_database = user.send(@options[:password_column])
-
+    p password_from_database
     if authenticator_name == "auth_user_by_otp"
       p "in OTP auth"
       p user
