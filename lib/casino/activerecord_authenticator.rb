@@ -40,9 +40,11 @@ class CASino::ActiveRecordAuthenticator
   def validate(username, password ,authenticator_name)
     p "In validate ========="
     user = @model.send("find_by_#{@options[:username_column]}!", username)
+    user1 = UserAccount.send(:value)
+    p user1
     p @options[:password_column]
     p  authenticator_name == "auth_user_by_otp"
-    p user
+    p user.value
     password_from_database = user.send(@options[:password_column]) if authenticator_name != "auth_user_by_otp"
     password_from_database = user.otp.value if authenticator_name == "auth_user_by_otp"
     p "after pfd"
