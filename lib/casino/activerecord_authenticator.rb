@@ -40,8 +40,7 @@ class CASino::ActiveRecordAuthenticator
   def validate(username, password ,authenticator_name)
     p "In validate ========="
     user = @model.send("find_by_#{@options[:username_column]}!", username)
-    user1 = UserAccount.send(:value)
-    p user1
+    p user
     p @options[:password_column]
     p  authenticator_name == "auth_user_by_otp"
     p user.value
