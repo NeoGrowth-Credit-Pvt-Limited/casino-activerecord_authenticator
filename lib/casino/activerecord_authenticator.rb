@@ -26,42 +26,22 @@ class CASino::ActiveRecordAuthenticator
       model_name = model_name.classify
     end
     model_class_name = "#{self.class.to_s}::#{model_name}"
-    if @options[:flag] == "otp"
     eval <<-END
       class #{model_class_name} < AuthDatabase
         self.table_name = "#{@options[:table]}"
         self.inheritance_column = :_type_disabled
-        has_one :otp, foreign_key: 'user_accounts_id', inverse_of: 'user_account', dependent: :destroy
       end
     END
-    elsif
-      eval <<-END
-      class #{model_class_name} < AuthDatabase
-        self.table_name = "#{@options[:table]}"
-        self.inheritance_column = :_type_disabled
-      end
-    END
-    end
+
     @model = model_class_name.constantize
     @model.establish_connection @options[:connection]
   end
 
-  def validate(username, password ,authenticator_name)
-    p "In validate ========="
+  def validate(username, password)
     user = @model.send("find_by_#{@options[:username_column]}!", username)
-    p user
-    p @options[:password_column]
-    p  authenticator_name == "auth_user_by_otp"
-    p user.value
-    password_from_database = user.send(@options[:password_column]) if authenticator_name != "auth_user_by_otp"
-    password_from_database = user.otp.value if authenticator_name == "auth_user_by_otp"
-    p "after pfd"
-    p password_from_database
-    if authenticator_name == "auth_user_by_otp"
-      p "in OTP auth"
-      p user
-      p password_from_database
-    elsif valid_password?(password, password_from_database)
+    password_from_database = user.send(@options[:password_column])
+
+    if valid_password?(password, password_from_database)
       user_data(user)
     else
       false
