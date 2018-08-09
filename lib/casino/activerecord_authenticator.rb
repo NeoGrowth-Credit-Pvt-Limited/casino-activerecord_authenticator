@@ -26,13 +26,22 @@ class CASino::ActiveRecordAuthenticator
       model_name = model_name.classify
     end
     model_class_name = "#{self.class.to_s}::#{model_name}"
+    if @options[:flag] == "otp"
     eval <<-END
+      class #{model_class_name} < AuthDatabase
+        self.table_name = "#{@options[:table]}"
+        self.inheritance_column = :_type_disabled
+        has_one :otp, foreign_key: 'user_accounts_id', inverse_of: 'user_account', dependent: :destroy
+      end
+    END
+    elsif
+      eval <<-END
       class #{model_class_name} < AuthDatabase
         self.table_name = "#{@options[:table]}"
         self.inheritance_column = :_type_disabled
       end
     END
-
+    end
     @model = model_class_name.constantize
     @model.establish_connection @options[:connection]
   end
